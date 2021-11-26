@@ -1,38 +1,32 @@
-pragma solidity >=0.8.0;
-
-pragma experimental SMTChecker;
+pragma solidity ^0.5.8;
 
 contract Reentrance {
     mapping(address => uint256) userBalance;
 
-    function getBalance(address u) constant returns (uint256) {
+    function getBalance(address u) public returns (uint256) {
         return userBalance[u];
     }
 
-    function addToBalance() payable {
+    function addToBalance() public payable {
         userBalance[msg.sender] += msg.value;
     }
 
-    function withdrawBalance() {
+    function withdrawBalance() public {
         // send userBalance[msg.sender] ethers to msg.sender
         // if mgs.sender is a contract, it will call its fallback function
-        if (!(msg.sender.call.value(userBalance[msg.sender])())) {
-            throw;
-        }
+        // require((msg.sender.call.value(userBalance[msg.sender])), "error");
         userBalance[msg.sender] = 0;
     }
 
-    function withdrawBalance_fixed() {
+    function withdrawBalance_fixed() public {
         // to protect against re-entrancy, the state variable
         // has to be change before the call
         uint256 amount = userBalance[msg.sender];
         userBalance[msg.sender] = 0;
-        if (!(msg.sender.call.value(amount)())) {
-            throw;
-        }
+        // require(!(msg.sender.call.value(amount)), "error");
     }
 
-    function withdrawBalance_fixed_2() {
+    function withdrawBalance_fixed_2() public {
         // send() and transfer() are safe against reentrancy
         // they do not transfer the remaining gas
         // and they give just enough gas to execute few instructions
