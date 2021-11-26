@@ -91,7 +91,7 @@ module.exports = {
       //  evmVersion: "byzantium"
       // }
       modelChecker: {
-        engine: "all",
+        engine: "none",
         targets: ["underflow", "overflow"],
       },
     },
